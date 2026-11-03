@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ours Finance Management</title>
+  <meta name="theme-color" content="#163d57">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='ours-finance-mark.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="topbar-copy">
+        <div class="brand-lockup">
+          <img class="brand-mark" src="{{ url_for('static', filename='ours-finance-mark.svg') }}" alt="Ours Finance Management logo">
+          <div class="brand-copy">
+            <p class="eyebrow">Ours Finance Management</p>
+            <h1 id="topbarTitle">Ours Finance Management</h1>
+          </div>
+        </div>
+        <p class="muted" id="topbarSubtitle">Interactive cashflow, planning, analytics, and account control in one place.</p>
+        <div class="welcome-strip">
+          <strong id="welcomeGreeting">Good Morning, User</strong>
+          <span class="muted" id="welcomeClock">Today • 09:00 AM</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="status-pill" id="sessionPill">Logged In</div>
+        <div class="profile-chip">
+          <div class="avatar" id="userInitials">AK</div>
+          <div>
+            <div class="profile-name" id="userName">Anuj Kumar</div>
+            <div class="profile-meta" id="userRole">Admin</div>
+            <div class="profile-meta" id="userEmail">anuj@example.com</div>
+          </div>
+        </div>
+        <button class="ghost-btn" id="logoutBtn" type="button">
+          <i data-lucide="log-out" aria-hidden="true"></i>
+          <span>Log Out</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="workspace-tabs" aria-label="Primary workspace navigation">
+      <button class="workspace-tab active" type="button" data-workspace-target="overview">
+        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+        <span>Overview</span>
+        <small>Snapshot and status</small>
+      </button>
+      <button class="workspace-tab" type="button" data-workspace-target="cashflow">
+        <i data-lucide="wallet" aria-hidden="true"></i>
+        <span>Cashflow</span>
+        <small>Transactions and accounts</small>
+      </button>
+      <button class="workspace-tab" type="button" data-workspace-target="planning">
+        <i data-lucide="chart-pie" aria-hidden="true"></i>
+        <span>Planning</span>
+        <small>Budgets, goals, EMI</small>
+      </button>
+      <button class="workspace-tab" type="button" data-workspace-target="workspace">
+        <i data-lucide="shield" aria-hidden="true"></i>
+        <span>Workspace</span>
+        <small>Profile and access</small>
+      </button>
+    </nav>
+
+    <nav class="quick-links">
+      <a class="quick-link" href="#overview" id="overviewQuickLink">
+        <i data-lucide="house" aria-hidden="true"></i>
+        <span>Overview</span>
+      </a>
+      <a class="quick-link" href="#dashboard" id="dashboardQuickLink">
+        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+        <span>Dashboard</span>
+      </a>
+      <button class="quick-link" id="calculatorToggleBtn" type="button">
+        <i data-lucide="calculator" aria-hidden="true"></i>
+        <span>Calculator</span>
+      </button>
+      <a class="quick-link" href="#emiSection" data-section-target="emi">
+        <i data-lucide="percent" aria-hidden="true"></i>
+        <span>EMI</span>
+      </a>
+      <a class="quick-link finance-link" href="#finance" data-target="transactions" data-section-target="finance">
+        <i data-lucide="receipt" aria-hidden="true"></i>
+        <span>Transactions</span>
+      </a>
+      <a class="quick-link" href="#accounts" data-section-target="accounts">
+        <i data-lucide="landmark" aria-hidden="true"></i>
+        <span>Accounts</span>
+      </a>
+      <a class="quick-link finance-link" href="#finance" data-target="income" data-section-target="finance">
+        <i data-lucide="trending-up" aria-hidden="true"></i>
+        <span>Income</span>
+      </a>
+      <a class="quick-link finance-link" href="#finance" data-target="expense" data-section-target="finance">
+        <i data-lucide="trending-down" aria-hidden="true"></i>
+        <span>Expense</span>
+      </a>
+      <a class="quick-link" href="#budgets" data-section-target="budgets">
+        <i data-lucide="piggy-bank" aria-hidden="true"></i>
+        <span>Budgets</span>
+      </a>
+      <a class="quick-link" href="#analytics" data-section-target="analytics">
+        <i data-lucide="chart-pie" aria-hidden="true"></i>
+        <span>Analytics</span>
+      </a>
+      <a class="quick-link" href="#admin" id="adminQuickLink" data-section-target="admin">
+        <i data-lucide="shield" aria-hidden="true"></i>
+        <span>Admin</span>
+      </a>
+      <a class="quick-link" href="#profile" data-section-target="profile">
+        <i data-lucide="user" aria-hidden="true"></i>
+        <span>Profile</span>
+      </a>
+      <a class="quick-link" href="#goals" data-section-target="goals">
+        <i data-lucide="target" aria-hidden="true"></i>
+        <span>Goals</span>
+      </a>
+    </nav>
+
+    <section class="panel quick-calculator-panel" id="quickCalculator" hidden>
+      <div class="panel-head compact">
+        <div>
+          <h2>Calculator</h2>
+          <p class="muted">A simple calculator for quick arithmetic while using the dashboard.</p>
+        </div>
+        <button class="ghost-btn" id="closeCalculatorBtn" type="button">
+          <i data-lucide="x" aria-hidden="true"></i>
+          <span>Hide Calculator</span>
+        </button>
+      </div>
+      <div class="simple-calculator">
+        <input type="text" id="calculatorDisplay" class="calculator-display" value="0" readonly>
+        <div class="calculator-grid">
+          <button class="calculator-btn ghost" data-calc-action="clear" type="button">AC</button>
+          <button class="calculator-btn ghost" data-calc-action="backspace" type="button">DEL</button>
+          <button class="calculator-btn operator" data-calc-value="%" type="button">%</button>
+          <button class="calculator-btn operator" data-calc-value="/" type="button">/</button>
+
+          <button class="calculator-btn" data-calc-value="7" type="button">7</button>
+          <button class="calculator-btn" data-calc-value="8" type="button">8</button>
+          <button class="calculator-btn" data-calc-value="9" type="button">9</button>
+          <button class="calculator-btn operator" data-calc-value="*" type="button">x</button>
+
+          <button class="calculator-btn" data-calc-value="4" type="button">4</button>
+          <button class="calculator-btn" data-calc-value="5" type="button">5</button>
+          <button class="calculator-btn" data-calc-value="6" type="button">6</button>
+          <button class="calculator-btn operator" data-calc-value="-" type="button">-</button>
+
+          <button class="calculator-btn" data-calc-value="1" type="button">1</button>
+          <button class="calculator-btn" data-calc-value="2" type="button">2</button>
+          <button class="calculator-btn" data-calc-value="3" type="button">3</button>
+          <button class="calculator-btn operator" data-calc-value="+" type="button">+</button>
+
+          <button class="calculator-btn wide" data-calc-value="0" type="button">0</button>
+          <button class="calculator-btn" data-calc-value="." type="button">.</button>
+          <button class="calculator-btn equals" data-calc-action="equals" type="button">=</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-grid" id="overview">
+      <button class="summary-card balance" type="button" data-finance-target="transactions">
+        <span class="summary-icon"><i data-lucide="wallet" aria-hidden="true"></i></span>
+        <span>Total Balance</span>
+        <strong id="balanceValue">Rs 0</strong>
+        <small>Net after income and expense</small>
+      </button>
+      <button class="summary-card" type="button" data-finance-target="income">
+        <span class="summary-icon"><i data-lucide="trending-up" aria-hidden="true"></i></span>
+        <span>Total Income</span>
+        <strong class="positive" id="incomeValue">Rs 0</strong>
+        <small id="incomeCountText">0 entries</small>
+      </button>
+      <button class="summary-card" type="button" data-finance-target="expense">
+        <span class="summary-icon"><i data-lucide="trending-down" aria-hidden="true"></i></span>
+        <span>Total Expense</span>
+        <strong class="negative" id="expenseValue">Rs 0</strong>
+        <small id="expenseCountText">0 entries</small>
+      </button>
+      <div class="summary-card">
+        <span class="summary-icon"><i data-lucide="search" aria-hidden="true"></i></span>
+        <span>Top Expense</span>
+        <strong id="topCategoryValue">-</strong>
+        <small>Highest spending category</small>
+      </div>
+      <div class="summary-card">
+        <span class="summary-icon"><i data-lucide="bell" aria-hidden="true"></i></span>
+        <span>Budget Alerts</span>
+        <strong id="budgetAlertValue">0</strong>
+        <small>Warning or over budget</small>
+      </div>
+    </section>
+
+    <section class="panel" id="dashboard">
+      <div class="panel-head">
+        <div>
+          <h2>Dashboard</h2>
+          <p class="muted" id="dashboardSubtitle">Session state, finance totals, and user-management overview.</p>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <article class="metric-card">
+          <span>Session Status</span>
+          <strong id="dashboardSessionStatus">Logged In</strong>
+          <small id="dashboardSessionMeta">Last login: -</small>
+        </article>
+        <article class="metric-card">
+          <span id="dashboardRoleLabel">Admin Access</span>
+          <strong id="dashboardRole">Admin</strong>
+          <small id="dashboardRoleMeta">User management available in admin tools</small>
+        </article>
+        <article class="metric-card">
+          <span id="dashboardUsersLabel">Users Summary</span>
+          <strong id="dashboardUsersValue">0 active</strong>
+          <small id="dashboardUsersMeta">0 total users</small>
+        </article>
+        <article class="metric-card">
+          <span>Assets</span>
+          <strong id="assetsValue">Rs 0</strong>
+          <small>Total of all accounts</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="finance" data-section-id="finance" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Finance Bar</h2>
+          <p class="muted">Click a bar item to switch between transactions, income, and expense views.</p>
+        </div>
+        <button class="ghost-btn" id="exportCsvBtn" type="button">
+          <i data-lucide="download" aria-hidden="true"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      <div class="finance-tabs">
+        <button class="finance-tab active" type="button" data-target="transactions" id="transactionsTab">Transactions (0)</button>
+        <button class="finance-tab" type="button" data-target="income" id="incomeTab">Income (0)</button>
+        <button class="finance-tab" type="button" data-target="expense" id="expenseTab">Expense (0)</button>
+      </div>
+
+      <div class="filters-grid">
+        <label class="filter-field">
+          <span>Search</span>
+          <input type="text" id="searchInput" placeholder="Category or date">
+        </label>
+        <label class="filter-field">
+          <span>Date From</span>
+          <input type="date" id="dateFromInput">
+        </label>
+        <label class="filter-field">
+          <span>Date To</span>
+          <input type="date" id="dateToInput">
+        </label>
+        <button class="ghost-btn" id="resetFiltersBtn" type="button">
+          <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+          <span>Reset Filters</span>
+        </button>
+      </div>
+
+      <section class="finance-panel active" id="transactionsPanel">
+        <div class="panel-head compact">
+          <div>
+            <h3>Transactions</h3>
+            <p class="muted" id="transactionsMeta">All transactions</p>
+          </div>
+          <button class="primary-btn" id="addTransactionBtn" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Transaction</span>
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="finance-panel" id="incomePanel">
+        <div class="panel-head compact">
+          <div>
+            <h3>Income</h3>
+            <p class="muted" id="incomeMeta">Income entries</p>
+          </div>
+          <button class="primary-btn" id="addIncomeBtn" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Income</span>
+          </button>
+        </div>
+        <div class="stack-list" id="incomeList"></div>
+      </section>
+
+      <section class="finance-panel" id="expensePanel">
+        <div class="panel-head compact">
+          <div>
+            <h3>Expense</h3>
+            <p class="muted" id="expenseMeta">Expense entries</p>
+          </div>
+          <button class="primary-btn" id="addExpenseBtn" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Expense</span>
+          </button>
+        </div>
+        <div class="stack-list" id="expenseList"></div>
+      </section>
+    </section>
+
+    <section class="panel" id="analytics" data-section-id="analytics" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Analytics</h2>
+          <p class="muted">Monthly flow, category spend, and budget comparison.</p>
+        </div>
+      </div>
+      <div class="analytics-grid">
+        <article class="chart-card">
+          <h3>Income vs Expense Trend</h3>
+          <div class="chart-frame"><canvas id="cashflowChart"></canvas></div>
+        </article>
+        <article class="chart-card">
+          <h3>Category Spend</h3>
+          <div class="chart-frame"><canvas id="categoryChart"></canvas></div>
+        </article>
+        <article class="chart-card">
+          <h3>Budget vs Spent</h3>
+          <div class="chart-frame"><canvas id="budgetChart"></canvas></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="entity-grid" id="entitySections" hidden>
+      <article class="panel" id="accounts" data-section-id="accounts" hidden>
+        <div class="panel-head compact">
+          <div>
+            <h3>Accounts</h3>
+            <p class="muted">Add, edit, or delete accounts.</p>
+          </div>
+          <div class="panel-actions">
+            <span class="chip" id="assetsChip">Rs 0</span>
+            <button class="ghost-btn" id="addAccountBtn" type="button">
+              <i data-lucide="plus" aria-hidden="true"></i>
+              <span>Add Account</span>
+            </button>
+          </div>
+        </div>
+        <div class="stack-list" id="accountsGrid"></div>
+      </article>
+
+      <article class="panel" id="budgets" data-section-id="budgets" hidden>
+        <div class="panel-head compact">
+          <div>
+            <h3>Budgets</h3>
+            <p class="muted">Create, edit, or delete budgets.</p>
+          </div>
+          <button class="ghost-btn" id="addBudgetBtn" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Budget</span>
+          </button>
+        </div>
+        <div class="stack-list" id="budgetList"></div>
+      </article>
+
+      <article class="panel" id="goals" data-section-id="goals" hidden>
+        <div class="panel-head compact">
+          <div>
+            <h3>Goals</h3>
+            <p class="muted">Track goal progress and manage goals.</p>
+          </div>
+          <div class="panel-actions">
+            <span class="chip" id="goalsChip">0 goals</span>
+            <button class="ghost-btn" id="addGoalBtn" type="button">
+              <i data-lucide="plus" aria-hidden="true"></i>
+              <span>Add Goal</span>
+            </button>
+          </div>
+        </div>
+        <div class="stack-list" id="goalsGrid"></div>
+      </article>
+    </section>
+
+    <section class="admin-profile-grid" id="profileSections" hidden>
+      <article class="panel" id="userWorkspace" data-section-id="user" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>User</h2>
+            <p class="muted">Your login activity and personal remarks.</p>
+          </div>
+        </div>
+        <div class="stack-list">
+          <article class="activity-item">
+            <strong>Last Login</strong>
+            <span id="userWorkspaceLogin">-</span>
+          </article>
+          <article class="activity-item">
+            <strong>Last Logout</strong>
+            <span id="userWorkspaceLogout">-</span>
+          </article>
+          <article class="activity-item">
+            <strong>Login ID</strong>
+            <span id="userWorkspaceId">-</span>
+          </article>
+        </div>
+        <div class="panel-head compact">
+          <div>
+            <h3>Remarks</h3>
+            <p class="muted">Keep your own notes here.</p>
+          </div>
+        </div>
+        <label class="field">
+          <span>Your Remark</span>
+          <textarea id="userRemarksInput" rows="6" placeholder="Write your remark, reminders, or notes here."></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="primary-btn" id="saveUserRemarksBtn" type="button">
+            <i data-lucide="save" aria-hidden="true"></i>
+            <span>Save Remark</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="panel" id="emiSection" data-section-id="emi" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>EMI Calculator</h2>
+            <p class="muted">Loan calculation, repayment summary, and smart finance analysis.</p>
+          </div>
+        </div>
+        <div class="loan-tabs" id="loanTabs">
+          <button class="loan-tab active" data-target="calculator" type="button">Calculator</button>
+          <button class="loan-tab" data-target="details" type="button">Loan Details</button>
+          <button class="loan-tab" data-target="analysis" type="button">AI Says</button>
+        </div>
+
+        <section class="loan-panel active" id="loanCalculatorPanel">
+          <article class="card-item loan-tool-card">
+            <div class="card-head">
+              <strong>EMI Calculator</strong>
+              <span class="tag healthy">Interactive</span>
+            </div>
+            <div class="editor-grid">
+              <label class="field">
+                <span>Loan Amount</span>
+                <input type="number" id="loanAmountInput" min="0" step="0.01" placeholder="500000">
+              </label>
+              <label class="field">
+                <span>Annual Interest %</span>
+                <input type="number" id="loanRateInput" min="0" step="0.01" placeholder="10.5">
+              </label>
+              <label class="field">
+                <span>Tenure (Months)</span>
+                <input type="number" id="loanMonthsInput" min="1" step="1" placeholder="60">
+              </label>
+              <label class="field">
+                <span>Monthly Income</span>
+                <input type="number" id="loanIncomeInput" min="0" step="0.01" placeholder="60000">
+              </label>
+              <label class="field">
+                <span>Monthly Expenses</span>
+                <input type="number" id="loanExpenseInput" min="0" step="0.01" placeholder="22000">
+              </label>
+              <label class="field">
+                <span>Existing EMI</span>
+                <input type="number" id="loanExistingEmiInput" min="0" step="0.01" placeholder="5000">
+              </label>
+            </div>
+            <div class="modal-actions">
+              <button class="primary-btn" id="analyzeLoanBtn" type="button">
+                <i data-lucide="sparkles" aria-hidden="true"></i>
+                <span>Analyze Loan</span>
+              </button>
+              <button class="ghost-btn" id="resetLoanBtn" type="button">
+                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                <span>Reset</span>
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <section class="loan-panel" id="loanDetailsPanel">
+          <article class="card-item loan-tool-card">
+            <div class="card-head">
+              <strong>Loan Details</strong>
+              <span class="tag warning">Summary</span>
+            </div>
+            <div class="table-wrap">
+              <table class="compact-table">
+                <tbody id="loanDetailsTableBody">
+                  <tr><th>Monthly EMI</th><td>-</td></tr>
+                  <tr><th>Total Interest</th><td>-</td></tr>
+                  <tr><th>Total Payment</th><td>-</td></tr>
+                  <tr><th>Interest Share</th><td>-</td></tr>
+                  <tr><th>Debt-to-Income</th><td>-</td></tr>
+                  <tr><th>Monthly Surplus</th><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="loan-panel" id="loanAnalysisPanel">
+          <article class="card-item ai-analysis-card">
+            <div class="card-head">
+              <strong>AI Finance Helper</strong>
+              <span class="tag warning">Smart Analysis</span>
+            </div>
+            <div class="muted">This tool reviews your loan inputs and gives practical finance guidance.</div>
+            <div class="analysis-output" id="loanAnalysisOutput">
+              Enter your loan details and click <strong>Analyze Loan</strong> to view suggestions.
+            </div>
+          </article>
+        </section>
+      </article>
+
+      <article class="panel" id="admin" data-section-id="admin" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>Admin</h2>
+            <p class="muted">User management for admin login only.</p>
+          </div>
+          <div class="panel-actions">
+            <span class="chip" id="usersChip">0 users</span>
+            <button class="ghost-btn" id="addUserBtn" type="button">
+              <i data-lucide="user-plus" aria-hidden="true"></i>
+              <span>Add User</span>
+            </button>
+          </div>
+        </div>
+        <div class="metric-card admin-message" id="adminMessage">
+          <span>User Management</span>
+          <strong>Admin Access</strong>
+          <small>Only the admin account is protected from deletion.</small>
+        </div>
+        <div class="dashboard-grid" id="adminStats"></div>
+        <div class="stack-list" id="usersGrid"></div>
+        <div class="panel-head compact">
+          <div>
+            <h3>Recent Activity</h3>
+            <p class="muted">Open the activity tag to view latest admin and finance actions.</p>
+          </div>
+          <button class="chip activity-toggle" id="activityToggleBtn" type="button">
+            <i data-lucide="history" aria-hidden="true"></i>
+            <span>Recent Activity</span>
+          </button>
+        </div>
+        <div class="stack-list" id="activityLog" hidden></div>
+      </article>
+
+      <article class="panel" id="profile" data-section-id="profile" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>Profile</h2>
+            <p class="muted" id="profileSubtitle">Signed-in admin profile and editable account details.</p>
+          </div>
+          <button class="ghost-btn" id="editProfileBtn" type="button">
+            <i data-lucide="pencil" aria-hidden="true"></i>
+            <span>Edit Profile</span>
+          </button>
+        </div>
+        <div class="profile-card-large" id="profilePanel"></div>
+      </article>
+    </section>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+  <button class="scroll-top-btn" id="scrollTopBtn" type="button" aria-label="Scroll to top">
+    <i data-lucide="arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <div class="modal-backdrop" id="transactionModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="transactionModalTitle">Add Transaction</h3>
+        <p class="muted" id="transactionModeHint">Use positive amount for income and negative amount for expense.</p>
+      </div>
+      <form id="transactionForm">
+        <input type="hidden" id="transactionId">
+        <div class="editor-grid">
+          <label class="field">
+            <span>Date</span>
+            <input type="date" id="transactionDate" required>
+          </label>
+          <label class="field">
+            <span>Category</span>
+            <input type="text" id="transactionCategory" required>
+          </label>
+          <label class="field">
+            <span>Amount</span>
+            <input type="number" step="0.01" id="transactionAmount" required>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="ghost-btn" type="button" id="closeTransactionModal">
+            <i data-lucide="x" aria-hidden="true"></i>
+            <span>Cancel</span>
+          </button>
+          <button class="primary-btn" type="submit">
+            <i data-lucide="check" aria-hidden="true"></i>
+            <span>Save</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="entityModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="entityModalTitle">Edit Item</h3>
+      </div>
+      <form id="entityForm">
+        <input type="hidden" id="entityType">
+        <input type="hidden" id="entityId">
+        <div class="editor-grid" id="entityFields"></div>
+        <div class="modal-actions">
+          <button class="ghost-btn" type="button" id="closeEntityModal">
+            <i data-lucide="x" aria-hidden="true"></i>
+            <span>Cancel</span>
+          </button>
+          <button class="primary-btn" type="submit">
+            <i data-lucide="check" aria-hidden="true"></i>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
